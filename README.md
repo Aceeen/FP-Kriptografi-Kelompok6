@@ -31,6 +31,7 @@ Proyek ini mendemonstrasikan konsep fungsi hash dan verifikasi integritas file m
 - [Pembuktian Integritas](#pembuktian-integritas)
   - [Skenario 1: Verifikasi Berhasil](#skenario-1-verifikasi-berhasil)
   - [Skenario 2: Verifikasi Gagal (File Diubah)](#skenario-2-verifikasi-gagal-file-diubah)
+- [Contributors](#contributors)
 
 ## Fitur
 
@@ -162,3 +163,17 @@ Untuk mendemonstrasikan kegagalan verifikasi:
 
 
 Ini membuktikan bahwa perubahan pada file akan menghasilkan hash yang berbeda sehingga memungkinkan deteksi pemalsuan atau kerusakan data.
+
+## Contributors
+* Backend Development :
+  - Backend Lead & API Design : Acintya Edria Sudarsono
+  - Backend Logic & Error Handling :
+  - Backend Testing & Deployment Setup :
+* Frontend Development :
+  - Frontend Lead & HTML Structure :
+  - JavaScript Logic, core functionality :
+  - UI/UX & Styling :
+  - Frontend testing & Usability :
+* Dokumentasi & Manajemen :
+  - Technical Writer :
+  - Coordinator & Dokumentasi :
