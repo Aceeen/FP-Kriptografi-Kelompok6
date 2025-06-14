@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Integrity Checker</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #e9e9e9;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 5px;
+            margin-top: 5px; /* Added for better spacing */
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .file-input-container {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px dashed #ccc;
+            background-color: #f9f9f9;
+        }
+        #verificationResult {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background-color: #e2e3e5;
+            color: #383d41;
+            border: 1px solid #d6d8db;
+        }
+        .hash-value {
+            font-family: monospace;
+            word-break: break-all;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>File Integrity Checker</h1>
+
+        <h2>Files on Server</h2>
+        <table id="filesTable">
+            <thead>
+                <tr>
+                    <th>Filename</th>
+                    <th>SHA-256 Hash (from Server)</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- File list will be populated here -->
+            </tbody>
+        </table>
+        <button onclick="fetchFiles()">Refresh File List</button>
+
+        <hr>
+
+        <h2>Verify Downloaded File</h2>
+        <p>
+            Pilih file dari komputer Anda yang namanya <strong>sama</strong> dengan salah satu file di server
+            untuk memverifikasi integritasnya.
+        </p>
+        <div class="file-input-container">
+            <label for="fileInput">Pilih file yang telah diunduh:</label>
+            <input type="file" id="fileInput">
+            <br><br>
+            <button onclick="verifyFile()">Verify Selected File</button>
+        </div>
+
+        <div id="verificationResult"></div>
+    </div>
+
+    <script>
+        const API_BASE_URL = "";
+        let serverFilesCache = []; // Cache untuk menyimpan daftar file dari server
+
+        async function fetchFiles() {
+            const tableBody = document.querySelector("#filesTable tbody");
+            const resultDiv = document.getElementById('verificationResult');
+            tableBody.innerHTML = '<tr><td colspan="3">Loading...</td></tr>';
+            resultDiv.innerHTML = '';
+            serverFilesCache = []; // Clear cache
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/files`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const files = await response.json();
+                serverFilesCache = files; // Simpan ke cache
+                tableBody.innerHTML = '';
+
+                if (files.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="3">No files found on server.</td></tr>';
+                    return;
+                }
+
+                files.forEach(file => {
+                    const row = tableBody.insertRow();
+                    row.insertCell().textContent = file.filename;
+                    const hashCell = row.insertCell();
+                    hashCell.innerHTML = `<span class="hash-value">${file.sha256_hash}</span>`;
+
+                    const actionsCell = row.insertCell();
+                    const downloadButton = document.createElement('button');
+                    downloadButton.textContent = 'Download';
+                    downloadButton.onclick = () => window.location.href = `${API_BASE_URL}/download/${file.filename}`;
+                    actionsCell.appendChild(downloadButton);
+
+                    // Tombol 'Set for Verification' bisa ditambahkan jika ingin memilih file dari tabel
+                    // untuk otomatis mengisi bagian verifikasi, tapi untuk sekarang kita fokus
+                    // pada pencocokan nama file otomatis.
+                });
+            } catch (error) {
+                console.error('Error fetching files:', error);
+                tableBody.innerHTML = `<tr><td colspan="3">Error loading files: ${error.message}</td></tr>`;
+                resultDiv.className = 'error';
+                resultDiv.textContent = `Failed to fetch file list: ${error.message}`;
+            }
+        }
+
+        async function calculateSHA256FromFile(file) {
+            const buffer = await file.arrayBuffer();
+            const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            return hashHex;
+        }
+
+        async function verifyFile() {
+            const fileInput = document.getElementById('fileInput');
+            const resultDiv = document.getElementById('verificationResult');
+            resultDiv.innerHTML = '';
+
+            if (fileInput.files.length === 0) {
+                resultDiv.className = 'error';
+                resultDiv.textContent = 'Please select a file to verify.';
+                return;
+            }
+
+            const localFile = fileInput.files[0];
+            const localFileName = localFile.name;
+
+            resultDiv.className = 'info';
+            resultDiv.textContent = `Verifying ${localFileName}...`;
+
+            // Cari hash yang diharapkan dari cache file server berdasarkan nama file
+            const serverFileMatch = serverFilesCache.find(sf => sf.filename === localFileName);
+
+            let expectedHash;
+            if (serverFileMatch) {
+                expectedHash = serverFileMatch.sha256_hash.toLowerCase();
+                resultDiv.innerHTML += `<br>Found matching file on server. Expected hash: <span class="hash-value">${expectedHash}</span>`;
+            } else {
+                // Jika tidak ditemukan di cache, coba ambil langsung dari endpoint /hash/<filename>
+                // Ini berguna jika daftar file belum di-refresh atau file baru ditambahkan di server.
+                resultDiv.innerHTML += `<br>File name "${localFileName}" not found in current server list. Attempting to fetch hash directly...`;
+                try {
+                    const response = await fetch(`${API_BASE_URL}/hash/${localFileName}`);
+                    if (!response.ok) {
+                        if (response.status === 404) {
+                             resultDiv.className = 'error';
+                             resultDiv.innerHTML += `<br><strong>Error: File "${localFileName}" not found on server (or no hash available).</strong> Cannot verify.`;
+                             return;
+                        }
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const hashData = await response.json();
+                    expectedHash = hashData.sha256_hash.toLowerCase();
+                    resultDiv.innerHTML += `<br>Successfully fetched hash from server. Expected hash: <span class="hash-value">${expectedHash}</span>`;
+                } catch (error) {
+                    console.error('Error fetching specific hash:', error);
+                    resultDiv.className = 'error';
+                    resultDiv.innerHTML += `<br><strong>Error: Could not retrieve hash for "${localFileName}" from server. ${error.message}</strong> Cannot verify.`;
+                    return;
+                }
+            }
+
+
+            resultDiv.innerHTML += `<br>Calculating hash for local file ${localFile.name}...`;
+
+            try {
+                const calculatedHash = await calculateSHA256FromFile(localFile);
+                resultDiv.innerHTML += `<br>Calculated local hash: <span class="hash-value">${calculatedHash}</span> <br><br>`;
+
+                if (calculatedHash === expectedHash) {
+                    resultDiv.className = 'success';
+                    resultDiv.innerHTML += '<strong>[✓] VERIFICATION SUCCESSFUL: File integrity is intact.</strong>';
+                } else {
+                    resultDiv.className = 'error';
+                    resultDiv.innerHTML += '<strong>[!] VERIFICATION FAILED: File may be corrupted or modified.</strong>';
+                    resultDiv.innerHTML += '<br><small>Ensure the local file name exactly matches a file on the server list and has not been altered.</small>';
+                }
+            } catch (error) {
+                console.error('Error verifying file:', error);
+                resultDiv.className = 'error';
+                resultDiv.innerHTML += `<br>Error during local hash calculation: ${error.message}`;
+            }
+        }
+
+        window.onload = fetchFiles;
+    </script>
+</body>
+</html>
