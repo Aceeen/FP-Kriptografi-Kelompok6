@@ -175,5 +175,5 @@ Ini membuktikan bahwa perubahan pada file akan menghasilkan hash yang berbeda se
   - UI/UX & Styling : Muhammad Andrean Rizq Prasetio
   - Frontend testing & Usability : Dian Anggraeni Putri
 * Dokumentasi & Manajemen
-  - Technical Writer :
+  - Technical Writer : Rafika Az Zahra Kusumastuti
   - Coordinator & Dokumentasi :
