@@ -170,7 +170,7 @@ Ini membuktikan bahwa perubahan pada file akan menghasilkan hash yang berbeda se
   - Backend Logic & Error Handling :
   - Backend Testing & Deployment Setup :
 * Frontend Development
-  - Frontend Lead & HTML Structure : 
+  - Frontend Lead & HTML Structure : Riskiyatul Nur Oktarani
   - JavaScript Logic, core functionality :
   - UI/UX & Styling :
   - Frontend testing & Usability : Dian Anggraeni Putri
