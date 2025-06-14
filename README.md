@@ -171,7 +171,7 @@ Ini membuktikan bahwa perubahan pada file akan menghasilkan hash yang berbeda se
   - Backend Testing & Deployment Setup : Tsaldia Hukma Cita
 * Frontend Development
   - Frontend Lead & HTML Structure : Riskiyatul Nur Oktarani
-  - JavaScript Logic, core functionality :
+  - JavaScript Logic, core functionality : Fikri Aulia A
   - UI/UX & Styling : Muhammad Andrean Rizq Prasetio
   - Frontend testing & Usability : Dian Anggraeni Putri
 * Dokumentasi & Manajemen
