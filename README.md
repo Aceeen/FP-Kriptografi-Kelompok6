@@ -168,7 +168,7 @@ Ini membuktikan bahwa perubahan pada file akan menghasilkan hash yang berbeda se
 * Backend Development
   - Backend Lead & API Design : Acintya Edria Sudarsono
   - Backend Logic & Error Handling :
-  - Backend Testing & Deployment Setup :
+  - Backend Testing & Deployment Setup : Tsaldia Hukma Cita
 * Frontend Development
   - Frontend Lead & HTML Structure : Riskiyatul Nur Oktarani
   - JavaScript Logic, core functionality :
