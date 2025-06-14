@@ -165,15 +165,15 @@ Untuk mendemonstrasikan kegagalan verifikasi:
 Ini membuktikan bahwa perubahan pada file akan menghasilkan hash yang berbeda sehingga memungkinkan deteksi pemalsuan atau kerusakan data.
 
 ## Contributors
-* Backend Development :
+* Backend Development
   - Backend Lead & API Design : Acintya Edria Sudarsono
   - Backend Logic & Error Handling :
   - Backend Testing & Deployment Setup :
-* Frontend Development :
+* Frontend Development
   - Frontend Lead & HTML Structure :
   - JavaScript Logic, core functionality :
   - UI/UX & Styling :
   - Frontend testing & Usability :
-* Dokumentasi & Manajemen :
+* Dokumentasi & Manajemen
   - Technical Writer :
   - Coordinator & Dokumentasi :
