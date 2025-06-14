@@ -31,8 +31,6 @@ Proyek ini mendemonstrasikan konsep fungsi hash dan verifikasi integritas file m
 - [Pembuktian Integritas](#pembuktian-integritas)
   - [Skenario 1: Verifikasi Berhasil](#skenario-1-verifikasi-berhasil)
   - [Skenario 2: Verifikasi Gagal (File Diubah)](#skenario-2-verifikasi-gagal-file-diubah)
-- [Kontribusi](#kontribusi)
-- [Lisensi](#lisensi)
 
 ## Fitur
 
@@ -104,7 +102,7 @@ Proyek ini mendemonstrasikan konsep fungsi hash dan verifikasi integritas file m
 
 ### Langkah-langkah Menjalankan
 
-1.  **Clone Repositori (jika dari GitHub):**
+1.  **Clone Repositori (GitHub):**
 
 2.  **Install Dependensi (Flask):**
     ```bash
