@@ -167,7 +167,7 @@ Ini membuktikan bahwa perubahan pada file akan menghasilkan hash yang berbeda se
 ## Contributors
 * Backend Development
   - Backend Lead & API Design : Acintya Edria Sudarsono
-  - Backend Logic & Error Handling :
+  - Backend Logic & Error Handling : Rama Owarianto P.S.
   - Backend Testing & Deployment Setup : Tsaldia Hukma Cita
 * Frontend Development
   - Frontend Lead & HTML Structure : Riskiyatul Nur Oktarani
