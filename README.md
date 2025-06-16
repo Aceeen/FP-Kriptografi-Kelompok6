@@ -176,4 +176,4 @@ Ini membuktikan bahwa perubahan pada file akan menghasilkan hash yang berbeda se
   - Frontend testing & Usability : Dian Anggraeni Putri
 * Dokumentasi & Manajemen
   - Technical Writer : Rafika Az Zahra Kusumastuti
-  - Coordinator & Dokumentasi : 
+  - Coordinator & Dokumentasi : Nisrina Atiqah Dwiputri Ridzki
