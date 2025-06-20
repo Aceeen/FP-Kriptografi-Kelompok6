@@ -1,69 +1,78 @@
 # server.py
 import os
 import hashlib
-from flask import Flask, jsonify, send_from_directory, abort, render_template # Tambahkan render_template
+from flask import Flask, jsonify, render_template, request
+from werkzeug.utils import secure_filename
 
-app = Flask(__name__) # __name__ penting untuk path template dan static
+# --- Inisialisasi Aplikasi Flask ---
+app = Flask(__name__)
 FILES_DIR = "files_to_serve"
-# Path absolut untuk direktori files_to_serve
-app.config["FILES_DIR"] = os.path.join(os.path.dirname(os.path.abspath(__file__)), FILES_DIR)
+app.config["UPLOAD_FOLDER"] = FILES_DIR
 
+# --- Konfigurasi Hash ---
+# Perubahan: Tambahkan semua algoritma baru yang didukung hashlib
+SUPPORTED_HASH_ALGORITHMS = [
+    'sha256', 
+    'sha512', 
+    'sha1', 
+    'md5', 
+    'ripemd160', 
+    'sha3_256', 
+    'blake2b'
+]
 
-# Pastikan direktori files_to_serve ada
-if not os.path.exists(app.config["FILES_DIR"]):
-    os.makedirs(app.config["FILES_DIR"])
-    with open(os.path.join(app.config["FILES_DIR"], "sample.txt"), "w") as f:
-        f.write("Ini adalah konten file contoh untuk demonstrasi integritas.")
-    print(f"Direktori '{FILES_DIR}' dibuat. Silakan tambahkan file di sana.")
-
-# Fungsi calculate_sha256 tetap sama
-
-def calculate_sha256(filepath):
-    """Menghitung hash SHA-256 dari sebuah file."""
-    sha256_hash = hashlib.sha256()
+# --- Fungsi Helper ---
+def calculate_hash(filepath, algorithm):
+    """Menghitung hash dari file menggunakan algoritma yang ditentukan."""
+    try:
+        hasher = hashlib.new(algorithm)
+    except ValueError:
+        print(f"Peringatan: Algoritma '{algorithm}' tidak didukung oleh hashlib sistem ini.")
+        return "N/A"
+        
     with open(filepath, "rb") as f:
         for byte_block in iter(lambda: f.read(4096), b""):
-            sha256_hash.update(byte_block)
-    return sha256_hash.hexdigest()
+            hasher.update(byte_block)
+    return hasher.hexdigest()
 
-# Endpoint baru untuk menyajikan frontend HTML
-@app.route('/', methods=['GET'])
+# --- Setup Awal ---
+if not os.path.exists(app.config["UPLOAD_FOLDER"]):
+    os.makedirs(app.config["UPLOAD_FOLDER"])
+
+# --- Routing dan Endpoint API ---
+@app.route('/')
 def index():
-    return render_template('index.html') # Akan mencari index.html di folder 'templates'
+    return render_template('index.html')
 
-@app.route('/files', methods=['GET'])
-def list_files():
-    """Endpoint untuk menampilkan daftar file dan hash SHA-256 mereka."""
-    files_info = []
+@app.route('/api/upload', methods=['POST'])
+def upload_file():
+    if 'file' not in request.files:
+        return jsonify({"error": "Tidak ada bagian file dalam request"}), 400
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"error": "Tidak ada file yang dipilih"}), 400
+    if file:
+        filename = secure_filename(file.filename)
+        save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(save_path)
+        return jsonify({"message": f"File '{filename}' berhasil diunggah."}), 201
+    return jsonify({"error": "Terjadi kesalahan saat upload"}), 500
+
+@app.route('/api/files/integrity')
+def get_files_for_integrity_check():
+    response_data = { "algorithms": SUPPORTED_HASH_ALGORITHMS, "files": [] }
     try:
-        for filename in os.listdir(app.config["FILES_DIR"]):
-            filepath = os.path.join(app.config["FILES_DIR"], filename)
+        for filename in sorted(os.listdir(app.config["UPLOAD_FOLDER"])):
+            filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
             if os.path.isfile(filepath):
-                file_hash = calculate_sha256(filepath)
-                files_info.append({"filename": filename, "sha256_hash": file_hash})
-        return jsonify(files_info)
+                hashes = {algo: calculate_hash(filepath, algo) for algo in SUPPORTED_HASH_ALGORITHMS}
+                response_data["files"].append({"filename": filename, "hashes": hashes})
+        return jsonify(response_data)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/download/<filename>', methods=['GET'])
-def download_file(filename):
-    """Endpoint untuk mengunduh file."""
-    try:
-        return send_from_directory(app.config["FILES_DIR"], filename, as_attachment=True)
-    except FileNotFoundError:
-        abort(404, description="File not found")
-
-@app.route('/hash/<filename>', methods=['GET'])
-def get_file_hash(filename):
-    """Endpoint untuk mendapatkan hash SHA-256 dari file tertentu."""
-    filepath = os.path.join(app.config["FILES_DIR"], filename)
-    if os.path.isfile(filepath):
-        file_hash = calculate_sha256(filepath)
-        return jsonify({"filename": filename, "sha256_hash": file_hash})
-    else:
-        abort(404, description="File not found")
-
+# --- Menjalankan Server ---
 if __name__ == '__main__':
-    print(f"Menyajikan file dari direktori: {app.config['FILES_DIR']}")
-    print("Frontend tersedia di http://localhost:5000/")
+    print(f"Menyajikan file dari: {os.path.abspath(app.config['UPLOAD_FOLDER'])}")
+    print("Server berjalan di http://localhost:5000")
     app.run(debug=True, port=5000)

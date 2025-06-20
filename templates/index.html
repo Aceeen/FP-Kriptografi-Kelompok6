@@ -1,191 +1,432 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File Integrity Checker</title>
-    <!-- Menghubungkan ke Google Fonts untuk font Inter dan Source Code Pro -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Source+Code+Pro&display=swap" rel="stylesheet">
-    <!-- Menghubungkan ke CSS Eksternal menggunakan url_for dari Flask -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crypto Toolkit - Kelompok L</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/blakejs@1.2.1/blake2b.min.js"></script>
+  </head>
+  <body>
     <div class="container">
-        <h1>File Integrity Checker</h1>
-        <p>Demonstrasi penggunaan fungsi hash (SHA-256) untuk verifikasi integritas file.</p>
+      <h1>Crypto Toolkit Kelompok L</h1>
+      <p>
+        Aplikasi untuk mengunggah file dan melakukan berbagai operasi
+        kriptografi dasar. Dikerjakan di Situbondo, 20 Juni 2025.
+      </p>
 
-        <h2>Files on Server</h2>
-        <button class="btn btn-secondary" onclick="fetchFiles()">Refresh File List</button>
-        <table id="filesTable">
-            <thead>
-                <tr>
-                    <th>Filename</th>
-                    <th>SHA-256 Hash (Server)</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr><td colspan="3">Loading...</td></tr>
-            </tbody>
-        </table>
+      <div class="tab-nav">
+        <button
+          class="tab-link active"
+          onclick="openTab(event, 'fileIntegrity')"
+        >
+          Pemeriksa Integritas File
+        </button>
+        <button class="tab-link" onclick="openTab(event, 'textHasher')">
+          Utilitas Hashing Teks
+        </button>
+      </div>
 
-
-        <h2>Verify Downloaded File</h2>
-        <div class="card">
+      <div id="fileIntegrity" class="tab-content active">
+        <div class="card" style="margin-bottom: 40px">
+          <h2>1. Upload File ke Server</h2>
+          <form id="uploadForm">
             <p>
-                Pilih file dari komputer Anda yang namanya <strong>sama</strong> dengan salah satu file di server
-                untuk memverifikasi integritasnya.
+              Mulai dengan mengunggah file ke server. File akan langsung
+              tersedia di daftar di bawah.
             </p>
-            <label for="fileInput" class="file-input-label">Pilih file lokal:</label>
-            <input type="file" id="fileInput" style="margin-bottom: 15px;">
-            <br>
-            <button class="btn btn-primary" onclick="verifyFile()">Verify Selected File</button>
+            <input type="file" id="fileToUpload" name="file" required />
+            <button type="submit" class="btn btn-primary">Unggah File</button>
+          </form>
+          <div id="uploadStatus" class="alert" style="display: none"></div>
         </div>
 
-        <!-- Area hasil verifikasi -->
-        <div id="verificationResult" class="alert"></div>
+        <h2>2. Periksa Integritas File di Server</h2>
+        <div
+          class="controls card"
+          style="
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+          "
+        >
+          <label for="fileAlgoSelector" style="margin: 0"
+            >Pilih Algoritma Hash:</label
+          >
+          <select
+            id="fileAlgoSelector"
+            onchange="renderIntegrityTable()"
+            style="flex: 1; min-width: 200px"
+          ></select>
+          <button class="btn btn-secondary" onclick="fetchIntegrityFiles()">
+            Refresh
+          </button>
+        </div>
+        <div
+          id="fileAlgoWarning"
+          class="alert alert-warning"
+          style="display: none"
+        ></div>
+        <table id="integrityTable">
+          <thead>
+            <tr>
+              <th>Filename</th>
+              <th>Hash (Server)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="2">Memuat file...</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2 style="margin-top: 40px">3. Verifikasi File Lokal Anda</h2>
+        <div class="card">
+          <p>
+            Pilih file lokal untuk membandingkan hash-nya dengan yang ada di
+            server menggunakan algoritma terpilih.
+          </p>
+          <input type="file" id="localFileToVerify" />
+          <button class="btn btn-primary" onclick="verifyLocalFile()">
+            Verifikasi File Lokal
+          </button>
+        </div>
+        <div id="integrityResult" class="alert" style="display: none"></div>
+      </div>
+
+      <div id="textHasher" class="tab-content">
+        <h2>Utilitas Hashing Teks</h2>
+        <p>
+          Hitung nilai hash dari teks atau data apa pun secara langsung di
+          browser Anda.
+        </p>
+        <div class="card">
+          <label for="textToHash">Masukkan Teks di Sini:</label>
+          <textarea
+            id="textToHash"
+            placeholder="Ketik atau tempel teks apa pun di sini..."
+            rows="8"
+          ></textarea>
+          <div class="controls-grid">
+            <div>
+              <label for="textHashAlgoSelector">Pilih Algoritma Hash:</label>
+              <select id="textHashAlgoSelector"></select>
+            </div>
+            <div>
+              <button class="btn btn-primary" onclick="hashText()">
+                Buat Hash
+              </button>
+            </div>
+          </div>
+          <label for="textHashOutput" style="margin-top: 20px"
+            >Hasil Hash:</label
+          >
+          <input
+            type="text"
+            id="textHashOutput"
+            readonly
+            placeholder="Hasil hash akan muncul di sini"
+          />
+        </div>
+      </div>
     </div>
 
     <script>
-        const API_BASE_URL = "";
-        let serverFilesCache = [];
+      //--- DATA & MAP GLOBAL ---
+      let integrityData = { files: [], algorithms: [] };
+      // Peta untuk algoritma yang didukung Web Crypto API
+      const WEB_CRYPTO_MAP = {
+        sha1: "SHA-1",
+        sha256: "SHA-256",
+        sha512: "SHA-512",
+      };
+      // Peta untuk nama yang lebih ramah pengguna
+      const ALGO_FRIENDLY_NAMES = {
+        md5: "MD5 (Cepat, Tidak Aman)",
+        ripemd160: "RIPEMD-160",
+        sha1: "SHA-1 (Legacy)",
+        sha256: "SHA-256 (Standar)",
+        sha512: "SHA-512 (Kuat)",
+        sha3_256: "SHA-3-256 (Modern)",
+        blake2b: "BLAKE2b (Sangat Cepat & Aman)",
+      };
 
-        // Fungsi untuk menampilkan pesan status
-        function showStatus(message, type = 'info') {
-            const resultDiv = document.getElementById('verificationResult');
-            resultDiv.innerHTML = message;
-            resultDiv.className = `alert alert-${type}`;
-            resultDiv.style.display = 'block'; // Tampilkan div
+      //--- LOGIKA TAB ---
+      function openTab(evt, tabName) {
+        document.querySelectorAll(".tab-content").forEach((tab) => {
+          tab.style.display = "none";
+          tab.classList.remove("active");
+        });
+        document
+          .querySelectorAll(".tab-link")
+          .forEach((link) => link.classList.remove("active"));
+        const activeTab = document.getElementById(tabName);
+        activeTab.style.display = "block";
+        activeTab.classList.add("active");
+        evt.currentTarget.classList.add("active");
+      }
+
+      //--- FUNGSI HELPERS ---
+      function showStatus(divId, message, type) {
+        const resultDiv = document.getElementById(divId);
+        resultDiv.innerHTML = message;
+        resultDiv.className = `alert alert-${type}`;
+        resultDiv.style.display = "block";
+      }
+      function formatHash(hash) {
+        return `<span class="hash-value">${hash}</span>`;
+      }
+      function bufferToHex(buffer) {
+        return Array.from(new Uint8Array(buffer))
+          .map((b) => b.toString(16).padStart(2, "0"))
+          .join("");
+      }
+      // Konversi ArrayBuffer ke WordArray (format yang digunakan Crypto-JS)
+      function arrayBufferToWordArray(ab) {
+        const i8a = new Uint8Array(ab);
+        const a = [];
+        for (let i = 0; i < i8a.length; i += 4) {
+          a.push(
+            (i8a[i] << 24) | (i8a[i + 1] << 16) | (i8a[i + 2] << 8) | i8a[i + 3]
+          );
+        }
+        return CryptoJS.lib.WordArray.create(a, i8a.length);
+      }
+
+      //--- FITUR UPLOAD ---
+      async function handleUpload(event) {
+        event.preventDefault();
+        const form = document.getElementById("uploadForm");
+        const fileInput = document.getElementById("fileToUpload");
+        const statusDiv = document.getElementById("uploadStatus");
+        const submitButton = form.querySelector("button");
+
+        if (fileInput.files.length === 0) {
+          showStatus(
+            "uploadStatus",
+            "Silakan pilih file terlebih dahulu.",
+            "danger"
+          );
+          return;
         }
 
-        // Fungsi untuk menyembunyikan status
-        function hideStatus() {
-             const resultDiv = document.getElementById('verificationResult');
-             resultDiv.style.display = 'none';
+        const formData = new FormData();
+        formData.append("file", fileInput.files[0]);
+        showStatus("uploadStatus", "Mengunggah file...", "info");
+        submitButton.disabled = true;
+        submitButton.textContent = "Mengunggah...";
+
+        try {
+          const response = await fetch("/api/upload", {
+            method: "POST",
+            body: formData,
+          });
+          const result = await response.json();
+          if (!response.ok) throw new Error(result.error || "Upload gagal.");
+
+          showStatus("uploadStatus", result.message, "success");
+          form.reset();
+          fetchIntegrityFiles();
+        } catch (error) {
+          showStatus("uploadStatus", `Error: ${error.message}`, "danger");
+        } finally {
+          submitButton.disabled = false;
+          submitButton.textContent = "Unggah File";
+        }
+      }
+
+      //--- LOGIKA INTI HASHING SISI KLIEN ---
+      async function calculateHashClientSide(data, algorithm) {
+        // data bisa berupa string (untuk teks) atau ArrayBuffer (untuk file)
+        let hashHex;
+
+        // Prioritas 1: Gunakan Web Crypto API jika didukung (paling cepat)
+        if (WEB_CRYPTO_MAP[algorithm]) {
+          const buffer =
+            typeof data === "string" ? new TextEncoder().encode(data) : data;
+          const hashBuffer = await crypto.subtle.digest(
+            WEB_CRYPTO_MAP[algorithm],
+            buffer
+          );
+          hashHex = bufferToHex(hashBuffer);
+        }
+        // Prioritas 2: Gunakan blakejs jika itu yang dipilih
+        else if (algorithm === "blake2b") {
+          const buffer =
+            typeof data === "string"
+              ? new TextEncoder().encode(data)
+              : new Uint8Array(data);
+          hashHex = blake2bHex(buffer); // blakejs bekerja dengan Uint8Array
+        }
+        // Prioritas 3: Gunakan Crypto-JS untuk sisanya
+        else {
+          const dataToHash =
+            typeof data === "string" ? data : arrayBufferToWordArray(data);
+          let hash;
+          switch (algorithm) {
+            case "md5":
+              hash = CryptoJS.MD5(dataToHash);
+              break;
+            case "ripemd160":
+              hash = CryptoJS.RIPEMD160(dataToHash);
+              break;
+            case "sha3_256":
+              hash = CryptoJS.SHA3(dataToHash, { outputLength: 256 });
+              break;
+            default:
+              throw new Error(
+                `Algoritma ${algorithm} tidak didukung di sisi klien.`
+              );
+          }
+          hashHex = hash.toString(CryptoJS.enc.Hex);
+        }
+        return hashHex;
+      }
+
+      //--- FITUR 1: FILE INTEGRITY ---
+      function setupSelectors(selectorId, algorithms) {
+        const selector = document.getElementById(selectorId);
+        selector.innerHTML = "";
+        algorithms.forEach((algo) => {
+          const option = new Option(
+            ALGO_FRIENDLY_NAMES[algo] || algo.toUpperCase(),
+            algo
+          );
+          selector.add(option);
+        });
+        if (algorithms.includes("sha256")) selector.value = "sha256";
+      }
+      function renderIntegrityTable() {
+        const selectedAlgo = document.getElementById("fileAlgoSelector").value;
+        const tableBody = document.querySelector("#integrityTable tbody");
+        const warningDiv = document.getElementById("fileAlgoWarning");
+        tableBody.innerHTML = "";
+
+        const insecureAlgos = ["md5", "sha1"];
+        warningDiv.style.display = insecureAlgos.includes(selectedAlgo)
+          ? "block"
+          : "none";
+        if (insecureAlgos.includes(selectedAlgo)) {
+          warningDiv.textContent = `[PERINGATAN] Algoritma ${selectedAlgo.toUpperCase()} dianggap tidak aman untuk beberapa kasus penggunaan kritis.`;
         }
 
-        // Fungsi untuk memformat hash dalam HTML
-        function formatHash(hash) {
-             return `<span class="hash-value">${hash}</span>`;
+        if (!integrityData.files || integrityData.files.length === 0) {
+          tableBody.innerHTML = `<tr><td colspan="2">Belum ada file di server. Silakan upload terlebih dahulu.</td></tr>`;
+          return;
+        }
+        integrityData.files.forEach((file) => {
+          const row = tableBody.insertRow();
+          row.insertCell().textContent = file.filename;
+          const hashValue = file.hashes[selectedAlgo] || "N/A";
+          row.insertCell().innerHTML = formatHash(hashValue);
+        });
+      }
+      async function fetchIntegrityFiles() {
+        try {
+          const response = await fetch("/api/files/integrity");
+          if (!response.ok) throw new Error("Gagal memuat daftar file.");
+          integrityData = await response.json();
+          setupSelectors("fileAlgoSelector", integrityData.algorithms);
+          renderIntegrityTable();
+        } catch (error) {
+          console.error("Error fetching integrity files:", error);
+        }
+      }
+      async function verifyLocalFile() {
+        const fileInput = document.getElementById("localFileToVerify");
+        const selectedAlgo = document.getElementById("fileAlgoSelector").value;
+        if (fileInput.files.length === 0) {
+          showStatus("integrityResult", "Pilih file lokal.", "danger");
+          return;
         }
 
-        async function fetchFiles() {
-            const tableBody = document.querySelector("#filesTable tbody");
-            tableBody.innerHTML = '<tr><td colspan="3">Loading file list from server...</td></tr>';
-            hideStatus();
-            serverFilesCache = [];
+        const localFile = fileInput.files[0];
+        showStatus(
+          "integrityResult",
+          `Membaca file dan menghitung hash ${selectedAlgo.toUpperCase()}...`,
+          "info"
+        );
 
-            try {
-                const response = await fetch(`${API_BASE_URL}/files`);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const files = await response.json();
-                serverFilesCache = files;
-                tableBody.innerHTML = '';
-
-                if (files.length === 0) {
-                    tableBody.innerHTML = '<tr><td colspan="3">No files found in the server directory.</td></tr>';
-                    return;
-                }
-
-                files.forEach(file => {
-                    const row = tableBody.insertRow();
-                    row.insertCell().textContent = file.filename;
-
-                    const hashCell = row.insertCell();
-                    hashCell.innerHTML = formatHash(file.sha256_hash);
-
-                    const actionsCell = row.insertCell();
-                    // Gunakan tag <a> untuk download agar lebih natural
-                    const downloadLink = document.createElement('a');
-                    downloadLink.textContent = 'Download';
-                    downloadLink.href = `${API_BASE_URL}/download/${file.filename}`;
-                    downloadLink.className = 'btn btn-sm btn-primary';
-                    actionsCell.appendChild(downloadLink);
-
-                });
-            } catch (error) {
-                console.error('Error fetching files:', error);
-                tableBody.innerHTML = `<tr><td colspan="3" style="color: #721c24;">Error loading files: ${error.message}</td></tr>`;
-                showStatus(`Failed to fetch file list: ${error.message}`, 'danger');
-            }
+        const serverFileMatch = integrityData.files.find(
+          (sf) => sf.filename === localFile.name
+        );
+        if (!serverFileMatch) {
+          showStatus(
+            "integrityResult",
+            `File tidak ditemukan di server.`,
+            "danger"
+          );
+          return;
         }
 
-        async function calculateSHA256FromFile(file) {
-            // Menggunakan Web Crypto API untuk hashing di sisi klien
-            const buffer = await file.arrayBuffer();
-            const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            // Convert array byte ke string hex
-            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-            return hashHex;
-        }
+        const expectedHash = serverFileMatch.hashes[selectedAlgo];
 
-        async function verifyFile() {
-            const fileInput = document.getElementById('fileInput');
-
-            if (fileInput.files.length === 0) {
-                showStatus('Please select a file to verify.', 'danger');
-                return;
-            }
-
-            const localFile = fileInput.files[0];
-            const localFileName = localFile.name;
-
-            showStatus(`Verifying <strong>${localFileName}</strong>...`, 'info');
-
-            // Cari hash yang diharapkan dari cache
-            const serverFileMatch = serverFilesCache.find(sf => sf.filename === localFileName);
-
-            let expectedHash;
-            let statusMessage = "";
-
-            if (serverFileMatch) {
-                expectedHash = serverFileMatch.sha256_hash.toLowerCase();
-                statusMessage += `Found matching file on server.<br>Expected hash (Server): ${formatHash(expectedHash)}`;
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          try {
+            const calculatedHash = await calculateHashClientSide(
+              e.target.result,
+              selectedAlgo
+            );
+            let resultHTML = `Expected Hash (Server): ${formatHash(
+              expectedHash
+            )}<br>Calculated Hash (Lokal): ${formatHash(
+              calculatedHash
+            )}<br><br>`;
+            if (calculatedHash === expectedHash) {
+              showStatus(
+                "integrityResult",
+                resultHTML + "<strong>[✓] VERIFIKASI BERHASIL</strong>",
+                "success"
+              );
             } else {
-                // Fallback: Coba ambil dari endpoint /hash
-                statusMessage += `File not in cache. Fetching hash from server...<br>`;
-                try {
-                    const response = await fetch(`${API_BASE_URL}/hash/${localFileName}`);
-                    if (!response.ok) {
-                         if (response.status === 404) {
-                             showStatus(`Error: File "${localFileName}" not found on server. Cannot verify.`, 'danger');
-                             return;
-                        }
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    const hashData = await response.json();
-                    expectedHash = hashData.sha256_hash.toLowerCase();
-                    statusMessage += `Successfully fetched hash.<br>Expected hash (Server): ${formatHash(expectedHash)}`;
-                } catch (error) {
-                    showStatus(`Error: Could not retrieve hash for "${localFileName}" from server. ${error.message}`, 'danger');
-                    return;
-                }
+              showStatus(
+                "integrityResult",
+                resultHTML + "<strong>[!] VERIFIKASI GAGAL</strong>",
+                "danger"
+              );
             }
+          } catch (error) {
+            showStatus("integrityResult", `Error: ${error.message}`, "danger");
+          }
+        };
+        reader.readAsArrayBuffer(localFile);
+      }
 
-            showStatus(statusMessage + `<br>Calculating local file hash...`, 'info');
-
-            try {
-                const calculatedHash = await calculateSHA256FromFile(localFile);
-                statusMessage += `<br>Calculated hash (Local): ${formatHash(calculatedHash)} <br><br>`;
-
-                if (calculatedHash === expectedHash) {
-                    showStatus(statusMessage + '<strong>[✓] VERIFICATION SUCCESSFUL: File integrity is intact.</strong>', 'success');
-                } else {
-                    showStatus(statusMessage + '<strong>[!] VERIFICATION FAILED: File may be corrupted or modified.</strong><br><small>Ensure the local file name exactly matches the server file and has not been altered.</small>', 'danger');
-                }
-            } catch (error) {
-                console.error('Error verifying file:', error);
-                showStatus(`Error during local hash calculation: ${error.message}`, 'danger');
-            }
+      //--- FITUR 2: TEXT HASHER ---
+      async function hashText() {
+        const textInput = document.getElementById("textToHash").value;
+        const algo = document.getElementById("textHashAlgoSelector").value;
+        const outputField = document.getElementById("textHashOutput");
+        if (!textInput) {
+          outputField.value = "Masukkan teks untuk di-hash.";
+          return;
         }
+        try {
+          const hashHex = await calculateHashClientSide(textInput, algo);
+          outputField.value = hashHex;
+        } catch (error) {
+          outputField.value = `Error: ${error.message}`;
+        }
+      }
 
-        // Fetch files saat halaman dimuat
-        window.onload = fetchFiles;
+      //--- INISIALISASI HALAMAN ---
+      window.onload = () => {
+        document.querySelector(".tab-link").click();
+        fetchIntegrityFiles().then(() => {
+          setupSelectors("textHashAlgoSelector", integrityData.algorithms);
+        });
+        document
+          .getElementById("uploadForm")
+          .addEventListener("submit", handleUpload);
+      };
     </script>
-</body>
+  </body>
 </html>
