@@ -12,7 +12,18 @@
     <script src="https://cdn.jsdelivr.net/npm/blakejs@1.2.1/blake2b.min.js"></script>
   </head>
   <body>
-    <div class="container">
+    <div id="splashScreen">
+      <h1>Selamat Datang di Crypto Toolkit</h1>
+      <p>
+        Aplikasi komprehensif untuk mengelola integritas file dan melakukan
+        operasi hashing teks, dirancang untuk efisiensi dan keamanan.
+      </p>
+      <button class="btn btn-splash" onclick="hideSplashScreen()">
+        Mulai Aplikasi
+      </button>
+    </div>
+
+    <div class="container" id="mainApplication" style="display: none">
       <h1>Crypto Toolkit Kelompok L</h1>
       <p>
         Aplikasi untuk mengunggah file dan melakukan berbagai operasi
@@ -33,7 +44,7 @@
 
       <div id="fileIntegrity" class="tab-content active">
         <div class="card" style="margin-bottom: 40px">
-          <h2>1. Upload File ke Server</h2>
+          <h2>1. Unggah File ke Server</h2>
           <form id="uploadForm">
             <p>
               Mulai dengan mengunggah file ke server. File akan langsung
@@ -157,6 +168,33 @@
         sha3_256: "SHA-3-256 (Modern)",
         blake2b: "BLAKE2b (Sangat Cepat & Aman)",
       };
+
+      //--- LOGIKA SPLASH SCREEN ---
+      function showSplashScreen() {
+        document.getElementById("splashScreen").classList.remove("hidden");
+        document.getElementById("mainApplication").style.display = "none";
+      }
+
+      function hideSplashScreen() {
+        const splashScreen = document.getElementById("splashScreen");
+        splashScreen.classList.add("hidden"); // Memulai animasi fade out
+        splashScreen.addEventListener(
+          "transitionend",
+          () => {
+            splashScreen.style.display = "none";
+            document.getElementById("mainApplication").style.display = "block";
+            // Inisialisasi aplikasi setelah splash screen disembunyikan
+            document.querySelector(".tab-link").click();
+            fetchIntegrityFiles().then(() => {
+              setupSelectors("textHashAlgoSelector", integrityData.algorithms);
+            });
+            document
+              .getElementById("uploadForm")
+              .addEventListener("submit", handleUpload);
+          },
+          { once: true }
+        ); // Pastikan event listener hanya berjalan sekali
+      }
 
       //--- LOGIKA TAB ---
       function openTab(evt, tabName) {
@@ -419,13 +457,8 @@
 
       //--- INISIALISASI HALAMAN ---
       window.onload = () => {
-        document.querySelector(".tab-link").click();
-        fetchIntegrityFiles().then(() => {
-          setupSelectors("textHashAlgoSelector", integrityData.algorithms);
-        });
-        document
-          .getElementById("uploadForm")
-          .addEventListener("submit", handleUpload);
+        // Tampilkan splash screen saat halaman dimuat
+        showSplashScreen();
       };
     </script>
   </body>
