@@ -21,9 +21,6 @@ Proyek ini mendemonstrasikan konsep fungsi hash dan verifikasi integritas file m
 - [Fitur](#fitur)
 - [Teknologi yang Digunakan](#teknologi-yang-digunakan)
 - [Struktur Proyek](#struktur-proyek)
-- [Cara Kerja](#cara-kerja)
-  - [Backend (Flask Server)](#backend-flask-server)
-  - [Frontend (HTML & JavaScript)](#frontend-html--javascript)
 - [Instalasi dan Menjalankan](#instalasi-dan-menjalankan)
   - [Prasyarat](#prasyarat)
   - [Langkah-langkah Menjalankan](#langkah-langkah-menjalankan)
@@ -35,10 +32,23 @@ Proyek ini mendemonstrasikan konsep fungsi hash dan verifikasi integritas file m
 
 ## Fitur
 
-*   **Hashing**
-*   **Upload**
-*   **Download**
-
+*   **Upload File ke Server:**
+    *   Pengguna dapat mengunggah file dari perangkat mereka ke server.
+    *   File yang diunggah akan ditampilkan di daftar, lengkap dengan nama dan nilai hash-nya berdasarkan algoritma hash yang digunakan saat unggah.
+    *   File yang diunggah akan digunakan untuk kebutuhan verifikasi integritas.
+*   **Check Integritas File:**
+    *   Fitur ini memungkinkan pengguna:
+        *   Memilih algoritma hash (misalnya: SHA-256, MD5, SHA-3, BLAKE2b, dll).
+        *   Melihat hash file yang telah diunggah ke server.
+        *   Mengunggah file lokal untuk dibandingkan hash-nya dengan versi yang ada di server menggunakan algoritma yang dipilih.
+    *   Cocok untuk mengecek apakah suatu file telah dimodifikasi/tidak berubah sejak terakhir disimpan atau ditransfer.
+*   **Utility Hashing Teks:**
+    *   Fitur untuk menghasilkan nilai hash dari teks biasa (plaintext).
+    *   Pengguna hanya perlu:
+        *   Mengetik atau menempelkan teks ke kolom input.
+        *   Memilih algoritma hashing yang diinginkan.
+        *   Klik tombol Buat Hash dan hasil akan langsung muncul.
+    *   Semua hashing dilakukan langsung di browser (client-side), tanpa mengirim data ke server.
 
 ## Teknologi yang Digunakan
 
@@ -86,19 +96,34 @@ Proyek ini mendemonstrasikan konsep fungsi hash dan verifikasi integritas file m
 
 5.  **Akses Frontend:**
     Buka browser web dan navigasikan ke `http://localhost:5000/`.
-
-    ![image](https://github.com/user-attachments/assets/2b37a0fb-d5b1-47d5-b245-2c1b251e5c38)
-
+![Screenshot 2025-06-22 230919](https://github.com/user-attachments/assets/b708819f-fdd8-436d-8550-72ead26e51b6)
+![Screenshot 2025-06-22 231026](https://github.com/user-attachments/assets/2ac7dbee-a195-465a-abc4-27c4e68fdcf5)
+![Screenshot 2025-06-22 231145](https://github.com/user-attachments/assets/a36c9cae-c5f6-43de-aa6f-0ed5ef3c803e)
 
 
 ## Penggunaan
 
-1.  Halaman akan menampilkan daftar file yang ada di server beserta hash SHA-256.
-2.  Klik tombol **"Download"** di samping file yang ingin dounduh.
-3.  Di bagian **"Verify Downloaded File"**:
-    *   Klik **"Choose File"** dan pilih file yang baru saja terunduh.
-    *   Klik tombol **"Verify Selected File"**.
-4.  Hasil verifikasi akan muncul, memberitahu apakah integritas file terjaga atau tidak.
+*   **Check Integritas File:**
+    *   **Unggah File ke Server:**
+        *   Klik tombol "Choose File" untuk memilih file dari perangkat Anda.
+        *   Setelah dipilih, klik tombol "Unggah File" untuk mengunggah file ke server.
+        *   File akan otomatis muncul dalam daftar di bawahnya, lengkap dengan nilai hash-nya.
+    *   **Periksa Integritas File:**
+        *   Pilih algoritma hash di dropdown "Pilih Algoritma Hash" (misalnya SHA-256, SHA-3, BLAKE2b, dll).
+        *   Sistem akan menampilkan daftar file yang telah diunggah lengkap dengan hash berdasarkan algoritma terpilih.
+    *   **Verifikasi File Lokal:**
+        *   Gunakan bagian "Verifikasi File Lokal Anda" untuk memastikan bahwa file yang Anda miliki sama dengan yang ada di server:
+            *   Klik "Choose File" lalu pilih file dari perangkat lokal Anda.
+            *   Klik tombol "Verifikasi File Lokal".
+        *   Aplikasi akan menghitung hash file lokal dan membandingkannya dengan hash di server.
+        *   Hasil verifikasi akan ditampilkan, menunjukkan apakah file identik (integritas terjaga) atau berbeda (integritas rusak).
+
+*   **Utility Hashing Teks:**
+    *   Buka tab "Utilitas Hashing Teks" di bagian atas halaman.
+    *   Ketik atau tempelkan teks ke kolom input bertanda "Masukkan Teks di Sini".
+    *   Pilih algoritma hash yang diinginkan.
+    *   Klik tombol "Buat Hash".
+    *   Nilai hash dari teks akan langsung muncul di kolom hasil.
 
 ## Pembuktian Integritas
 
