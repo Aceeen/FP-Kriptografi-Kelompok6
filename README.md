@@ -35,18 +35,10 @@ Proyek ini mendemonstrasikan konsep fungsi hash dan verifikasi integritas file m
 
 ## Fitur
 
-*   **Backend Server (Flask):**
-    *   Menyajikan daftar file yang tersedia dari direktori `files_to_serve/`.
-    *   Menghitung dan menyediakan hash SHA-256 untuk setiap file.
-    *   Memungkinkan pengunduhan file.
-    *   Menyediakan endpoint API untuk daftar file dan hash individual.
-*   **Frontend (HTML, CSS, JavaScript):**
-    *   Menampilkan daftar file dari server beserta hash SHA-256 mereka.
-    *   Tombol untuk mengunduh file langsung dari browser.
-    *   Fitur untuk memilih file lokal (yang telah diunduh) untuk verifikasi.
-    *   Secara otomatis mengambil hash yang diharapkan dari server berdasarkan nama file yang dipilih.
-    *   Menghitung hash SHA-256 file lokal di sisi klien menggunakan Web Crypto API.
-    *   Membandingkan hash lokal dengan hash server dan menampilkan status verifikasi (berhasil/gagal).
+*   **Hashing**
+*   **Upload**
+*   **Download**
+
 
 ## Teknologi yang Digunakan
 
@@ -64,34 +56,6 @@ Proyek ini mendemonstrasikan konsep fungsi hash dan verifikasi integritas file m
  ## Struktur Proyek
  ![image](https://github.com/user-attachments/assets/afc8f884-d658-4d31-b47d-7e89ea9e313b)
 
- ## Cara Kerja
-
-### Backend (Flask Server - `server.py`)
-
-1.  **Inisialisasi**: Saat server dimulai, ia memeriksa keberadaan direktori `files_to_serve/`. Jika tidak ada, direktori tersebut akan dibuat beserta file `sample.txt` contoh.
-2.  **Fungsi Hash**: `calculate_sha256(filepath)` digunakan untuk menghitung hash SHA-256 dari sebuah file dengan membacanya dalam _chunks_ agar efisien.
-3.  **Endpoints API**:
-    *   `/` (GET): Menyajikan halaman frontend `index.html`.
-    *   `/files` (GET): Mengembalikan daftar JSON berisi nama file dan hash SHA-256 mereka dari direktori `files_to_serve/`.
-    *   `/download/<filename>` (GET): Memungkinkan klien untuk mengunduh file tertentu dari direktori `files_to_serve/`.
-    *   `/hash/<filename>` (GET): Mengembalikan JSON berisi nama file dan hash SHA-256 spesifik untuk file tersebut. Ini digunakan sebagai _fallback_ oleh frontend jika file tidak ada dalam cache daftar file awal.
-
-### Frontend (HTML & JavaScript - `templates/index.html`)
-
-1.  **Memuat Daftar File**: Saat halaman dimuat, fungsi `fetchFiles()` dipanggil. Fungsi ini:
-    *   Mengambil daftar file dan hashnya dari endpoint `/files` server.
-    *   Menyimpan daftar ini dalam `serverFilesCache` untuk penggunaan selanjutnya.
-    *   Menampilkan daftar file dalam tabel HTML, lengkap dengan tombol "Download".
-2.  **Mengunduh File**: Mengklik tombol "Download" akan mengarahkan browser untuk mengunduh file dari endpoint `/download/<filename>`.
-3.  **Verifikasi File**:
-    *   Pengguna memilih file dari komputer lokal mereka (biasanya file yang baru saja diunduh) menggunakan input `<input type="file">`.
-    *   Ketika tombol "Verify Selected File" diklik, fungsi `verifyFile()` dijalankan:
-        *   Nama file lokal yang dipilih diambil.
-        *   Skrip mencoba menemukan hash yang sesuai untuk nama file tersebut dari `serverFilesCache`.
-        *   Jika tidak ditemukan di cache, skrip akan mencoba mengambil hash langsung dari endpoint `/hash/<filename>` server.
-        *   Jika hash server berhasil didapatkan, fungsi `calculateSHA256FromFile()` dipanggil. Fungsi ini menggunakan `crypto.subtle.digest` (Web Crypto API) untuk menghitung hash SHA-256 dari file lokal yang dipilih pengguna. Proses ini terjadi sepenuhnya di browser klien.
-        *   Hash yang dihitung secara lokal kemudian dibandingkan dengan hash yang diharapkan dari server.
-        *   Hasil perbandingan (berhasil atau gagal) ditampilkan kepada pengguna.
 
 ## Instalasi dan Menjalankan
 
