@@ -36,12 +36,16 @@ Proyek ini mendemonstrasikan konsep fungsi hash dan verifikasi integritas file m
     *   Pengguna dapat mengunggah file dari perangkat mereka ke server.
     *   File yang diunggah akan ditampilkan di daftar, lengkap dengan nama dan nilai hash-nya berdasarkan algoritma hash yang digunakan saat unggah.
     *   File yang diunggah akan digunakan untuk kebutuhan verifikasi integritas.
+      ![image](https://github.com/user-attachments/assets/ca412df6-0b62-478f-bb68-7a721f5ad53b)
+
 *   **Check Integritas File:**
     *   Fitur ini memungkinkan pengguna:
         *   Memilih algoritma hash (misalnya: SHA-256, MD5, SHA-3, BLAKE2b, dll).
         *   Melihat hash file yang telah diunggah ke server.
         *   Mengunggah file lokal untuk dibandingkan hash-nya dengan versi yang ada di server menggunakan algoritma yang dipilih.
     *   Cocok untuk mengecek apakah suatu file telah dimodifikasi/tidak berubah sejak terakhir disimpan atau ditransfer.
+      ![image](https://github.com/user-attachments/assets/3e8895d3-f6e5-466c-be3a-4da9d23343e5)
+
 *   **Utility Hashing Teks:**
     *   Fitur untuk menghasilkan nilai hash dari teks biasa (plaintext).
     *   Pengguna hanya perlu:
@@ -49,6 +53,8 @@ Proyek ini mendemonstrasikan konsep fungsi hash dan verifikasi integritas file m
         *   Memilih algoritma hashing yang diinginkan.
         *   Klik tombol Buat Hash dan hasil akan langsung muncul.
     *   Semua hashing dilakukan langsung di browser (client-side), tanpa mengirim data ke server.
+      ![image](https://github.com/user-attachments/assets/310be6b1-4801-48db-9851-dc9749e7a15b)
+
 
 ## Teknologi yang Digunakan
 
@@ -134,6 +140,8 @@ Konsep utama di sini adalah jika hash SHA-256 dari file yang diunduh sama persis
 1.  Unduh file `sample.txt` dari server.
 2.  Pilih file `sample.txt` yang baru diunduh untuk diverifikasi.
 3.  Hasilnya akan menunjukkan **"[✓] VERIFICATION SUCCESSFUL: File integrity is intact."**
+   ![image](https://github.com/user-attachments/assets/e31387d3-3fdb-4b91-99ef-50f872acaaa5)
+
 
 
 
@@ -147,6 +155,7 @@ Untuk mendemonstrasikan kegagalan verifikasi:
 4.  Di bagian "Verify Downloaded File", pilih kembali file `sample.txt` yang **sudah diubah**.
 5.  Klik "Verify Selected File".
 6.  Hasilnya akan menunjukkan **"[!] VERIFICATION FAILED: File may be corrupted or modified."** Ini karena hash dari file yang diubah tidak akan cocok lagi dengan hash asli dari server.
+   ![image](https://github.com/user-attachments/assets/c72a87e4-ff97-4072-9300-a1c644be945a)
 
 
 Ini membuktikan bahwa perubahan pada file akan menghasilkan hash yang berbeda sehingga memungkinkan deteksi pemalsuan atau kerusakan data.
