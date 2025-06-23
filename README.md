@@ -134,7 +134,6 @@ Konsep utama di sini adalah jika hash SHA-256 dari file yang diunduh sama persis
 1.  Unduh file `sample.txt` dari server.
 2.  Pilih file `sample.txt` yang baru diunduh untuk diverifikasi.
 3.  Hasilnya akan menunjukkan **"[✓] VERIFICATION SUCCESSFUL: File integrity is intact."**
-    ![image](https://github.com/user-attachments/assets/9c1588fe-ed38-4ef8-b769-943aee9b2988)
 
 
 
@@ -148,7 +147,6 @@ Untuk mendemonstrasikan kegagalan verifikasi:
 4.  Di bagian "Verify Downloaded File", pilih kembali file `sample.txt` yang **sudah diubah**.
 5.  Klik "Verify Selected File".
 6.  Hasilnya akan menunjukkan **"[!] VERIFICATION FAILED: File may be corrupted or modified."** Ini karena hash dari file yang diubah tidak akan cocok lagi dengan hash asli dari server.
-   ![image](https://github.com/user-attachments/assets/f35be052-286c-4e17-9117-9e82ee9a7a91)
 
 
 Ini membuktikan bahwa perubahan pada file akan menghasilkan hash yang berbeda sehingga memungkinkan deteksi pemalsuan atau kerusakan data.
