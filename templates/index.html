@@ -9,7 +9,6 @@
       href="{{ url_for('static', filename='style.css') }}"
     />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/blakejs@1.2.1/blake2b.min.js"></script>
   </head>
   <body>
     <div id="splashScreen">
@@ -25,9 +24,7 @@
 
     <div class="container" id="mainApplication" style="display: none">
       <h1>Crypto Toolkit Kelompok L</h1>
-      <p>
-        Aplikasi untuk mengunggah file dan melakukan berbagai operasi
-      </p>
+      <p>Aplikasi untuk mengunggah file dan melakukan berbagai operasi</p>
 
       <div class="tab-nav">
         <button
@@ -165,7 +162,6 @@
         sha256: "SHA-256 (Standar)",
         sha512: "SHA-512 (Kuat)",
         sha3_256: "SHA-3-256 (Modern)",
-        blake2b: "BLAKE2b (Sangat Cepat & Aman)",
       };
 
       //--- LOGIKA SPLASH SCREEN ---
@@ -294,15 +290,7 @@
           );
           hashHex = bufferToHex(hashBuffer);
         }
-        // Prioritas 2: Gunakan blakejs jika itu yang dipilih
-        else if (algorithm === "blake2b") {
-          const buffer =
-            typeof data === "string"
-              ? new TextEncoder().encode(data)
-              : new Uint8Array(data);
-          hashHex = blake2bHex(buffer); // blakejs bekerja dengan Uint8Array
-        }
-        // Prioritas 3: Gunakan Crypto-JS untuk sisanya
+        // Prioritas 2: Gunakan Crypto-JS untuk sisanya
         else {
           const dataToHash =
             typeof data === "string" ? data : arrayBufferToWordArray(data);

@@ -1,4 +1,3 @@
-# server.py
 import os
 import hashlib
 from flask import Flask, jsonify, render_template, request
@@ -10,7 +9,6 @@ FILES_DIR = "files_to_serve"
 app.config["UPLOAD_FOLDER"] = FILES_DIR
 
 # --- Konfigurasi Hash ---
-# Perubahan: Tambahkan semua algoritma baru yang didukung hashlib
 SUPPORTED_HASH_ALGORITHMS = [
     'sha256', 
     'sha512', 
@@ -18,7 +16,6 @@ SUPPORTED_HASH_ALGORITHMS = [
     'md5', 
     'ripemd160', 
     'sha3_256', 
-    'blake2b'
 ]
 
 # --- Fungsi Helper ---
